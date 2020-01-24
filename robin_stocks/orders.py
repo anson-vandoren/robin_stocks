@@ -186,7 +186,7 @@ def order_buy_market(symbol, quantity, timeInForce = 'gtc', extendedHours = Fals
     'account': profiles.load_account_profile(info='url'),
     'instrument': stocks.get_instruments_by_symbols(symbol, info='url')[0],
     'symbol': symbol,
-    'price': helper.round_price(stocks.get_latest_price(symbol)[0]),
+    'price': helper.round_price(float(stocks.get_latest_price(symbol)[0]) * 1.05),
     'quantity': quantity,
     'ref_id': str(uuid4()),
     'type': 'market',
@@ -384,7 +384,6 @@ def order_sell_market(symbol, quantity, timeInForce = 'gtc', extendedHours = Fal
     'account': profiles.load_account_profile(info='url'),
     'instrument': stocks.get_instruments_by_symbols(symbol, info='url')[0],
     'symbol': symbol,
-    'price': helper.round_price(stocks.get_latest_price(symbol)[0]),
     'quantity': quantity,
     'ref_id': str(uuid4()),
     'type': 'market',
@@ -394,6 +393,10 @@ def order_sell_market(symbol, quantity, timeInForce = 'gtc', extendedHours = Fal
     'side': 'sell',
     'extended_hours': extendedHours
     }
+
+    # Price is required for extended hours, but not sent otherwise
+    if extendedHours:
+        payload['price'] = helper.round_price(stocks.get_latest_price(symbol)[0] * 0.95)
 
     url = urls.orders()
     data = helper.request_post(url, payload)
